@@ -3,66 +3,57 @@ const express = require('express'),
 
 const app = express();
 const bodyParser = require('body-parser'),
-      methodOverride = require('method-override'),
       uuid = require('uuid');
       
 app.use(morgan('common'));
 app.use(bodyParser.json());
 
-let users = [
+let users =  [
   {
-  username: 'lhs',
-  email: 'lhschou1@gmail.com',
-  password: 'jslsjd',
-  birthday: '14/06/1996',
-  favoriteMovies: []
-  },
+    username: 'lhs',
+    email: 'lhschou1@gmail.com',
+    password: 'jslsjd',
+    birthday: '14/06/1996',
+    favorites: []
+  }
 ]
-
 let movies = [
   {
-    title:'The Shawshank Redemption',
-    year:'1994'
+    title: 'Parasite', 
+    year: '2019', 
+    genre: {
+      name: 'Drama',
+      description: ''
+    }, 
+    director: {
+      name: 'Bong Joon-ho', 
+      birth: '1969',
+      death: '-',
+      bio: ''
+    },
+    actors: {},
+    imgURL: '',
+    featured: true
   },
   {
-    title:'The Godfather',
-    year:'1972'
-  },
-  {
-    title:'The Dark Knight',
-    year:'2008'
-  },
-  {
-    title:'The Godfather: Part II',
-    year:'1974'
-  },
-  {
-    title:'12 Angry Men',
-    year:'1957'
-  },
-  {
-    title:'Schindler\'s List',
-    year:'1993'
-  },
-  {
-    title:'The Lord of the Rings: The Return of the King',
-    year:'2003'
-  },
-  {
-    title:'Pulp Fiction',
-    year:'1994'
-  },
-  {
-    title:'The Lord of the Rings: The Fellowship of the Ring',
-    year:'2001'
-  },
-  {
-    title:'The Good, the Bad and the Ugly',
-    year:'1966'
-  },
+    title: 'The Dark Knight', 
+    year: '2008', 
+    genre: {
+      name: 'Action',
+      description: ''
+    }, 
+    director: {
+      name: 'Christopher Nolan', 
+      birth: '1970',
+      death: '-',
+      bio: ''
+    },
+    actors: {},
+    imgURL: '',
+    featured: true
+  }
 ];
 
-//GET requests 
 app.get('/', (req, res) => {
   res.send('Welcome to MyFlix!');
 });
@@ -74,8 +65,7 @@ app.get('/movies', (req, res) => {
 
 // Gets single movie by title
 app.get('/movies/:title', (req, res) => {
-  const { title } = req.params; 
-  const movie = movie.find((movie) => movie.Title === title); 
+  const movie = movies.find((movie) => movie.title === req.params.title);
 
   if (movie) {
     res.status(200).json(movie);
@@ -102,7 +92,7 @@ app.get('/movies/directors/:name', (req, res) => {
   if (director) {
     res.status(200).json(director);
   } else {
-    res.status(404).send('Director not found.')
+    res.status(404).send('Director not found!')
   }
 });
 
@@ -110,10 +100,10 @@ app.get('/movies/directors/:name', (req, res) => {
 app.post('/users', (req, res) => {
   const newUser = req.body;
 
-  if (!newUser.username) {
+  if (newUser.username) {
     newUser.id = uuid.v4();
     users.push(newUser);
-    res.status(201).send(newUser)
+    res.status(201).json(newUser);
   } else {
     const message = 'Missing username in request body';
     res.status(400).send(message);
@@ -123,53 +113,51 @@ app.post('/users', (req, res) => {
 // Update user info
 app.put('/users/:username', (req, res) => {
   const newUsername = req.body;
-
-  let user = user.find((user) => { return user.username === req.params.username });
+  let user = users.find((user) => { return user.username === req.params.username });
 
   if (user) {
     user.username = newUsername.username;
-    res.status(200).json(user);
+    res.status(201).json(user)
   } else {
-    res.status(404).send('Username not found!');
-  }
+    res.status(404).send('User not found!')
+  };
 });
 
 // Adds movie to list of user favorites
 app.post('/users/:username/:movie', (req, res) => {
-  let user = users.find((user) => {return user.username === req.params.username});
+  let user = users.find((user) => { return user.username === req.params.username });
 
   if (user) {
     user.favorites.push(req.params.movie);
-    res.status(200).send(req.params.movie + ' was added to ' + user.username + "'s favorite movies.");
+    res.status(200).send(req.params.movie + ' was added to ' + user.username + "'s favorites!");
   } else {
-    res.status(400).send('User not found!')
+    res.status(404).send('User not found!');
   };
 });
 
 // Removes movies from list of user favorites
-app.delete('/users/:username/:movie', (req, res) => {
+app.delete('/users/:username/:movie', (req,res) => {
   let user = users.find((user) => { return user.username === req.params.username });
-
+  
   if (user) {
     user.favorites = user.favorites.filter((mov) => { return mov !== req.params.movie });
-    res.status(200).send(req.params.movie + ' was removed from ' + user.username + "'s favorite movies.");
+    res.status(200).send(req.params.movie + ' was removed from ' + user.username + "'s favorites!");
   } else {
-    res.status(400).send('User not found!')
+    res.status(404).send('User not found!')
   };
-
 });
 
 // Removes user 
-app.delete('/users/:username', (req, res) => {
+app.delete('/users/:username', (req,res) => {
   let user = users.find((user) => { return user.username === req.params.username });
 
   if (user) {
-    users = user.filter((user) => { return user.username !== req.params.username });
+    users = users.filter((user) => { return user.username !== req.params.username });
     res.status(201).send(req.params.username + ' was deleted!');
   } else {
-    res.status(400).send('User not found!')
-  };
-});
+    res.status(404).send('User not found!')
+  }
+})
 
 // Read documentation
 app.get('/documentation', (req, res) => {
@@ -179,18 +167,11 @@ app.get('/documentation', (req, res) => {
 app.use(express.static('public'));
 
 // error handling 
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-
-app.use(methodOverride());
-
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Error!');
 });
 
-// listen for requests 
 app.listen(8080, () => {
-  console.log('Your app is listening on port 8080');
+  console.log('Your app is listening on port 8080.');
 });
