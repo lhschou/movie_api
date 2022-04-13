@@ -18,7 +18,6 @@
           <th scope="col">Business Logic</th>
           <th scope="col">URL</th>
           <th scope="col">HTTP Method</th>
-          <th scope="col">Query parameters</th>
           <th scope="col">Request body data format</th>
           <th scope="col">Response body data format</th>
         </tr>
@@ -29,14 +28,12 @@
           <td>/movies</td>
           <td>GET</td>
           <td>None</td>
-          <td>None</td>
           <td>A JSON object holding data about all movies</td>
         </tr>
         <tr>
           <td>Return data about a single movie by title to the user</td>
-          <td>/movies/[title]</td>
+          <td>/movies/:Title</td>
           <td>GET</td>
-          <td>:title</td>
           <td>None</td>
           <td>A JSON object holding data about the selected movie containing description, genre, director and img. Example:
             <pre>
@@ -56,9 +53,8 @@
         </tr>
         <tr>
           <td>Return data about a genre by name/title</td>
-          <td>/movies/genres/[genre]</td>
+          <td>/movies/genre/:Name</td>
           <td>GET</td>
-          <td>:genre</td>
           <td>None</td>
           <td>A JSON object holding data about the selected genre. Example:
             <pre>
@@ -73,9 +69,8 @@
         </tr>
         <tr>
           <td>Return data about a director by name</td>
-          <td>/movies/directors/[name]</td>
+          <td>/movies/director/:Name</td>
           <td>GET</td>
-          <td>:name</td>
           <td>None</td>
           <td>A JSON holding data about the selected director. Example:
             <pre>
@@ -94,14 +89,13 @@
           <td>Allow new users to register</td>
           <td>/users</td>
           <td>POST</td>
-          <td>None</td>
           <td>A JSON object holding data about the user to add. Example:
             <pre>
               <code>
                 {
                   username: '',
-                  email: '',
                   password: '',
+                  email: '',
                   birthday: '',
                   favorites: []
                 }
@@ -114,8 +108,8 @@
                 {
                   id: '1'
                   username: '',
-                  email: '',
                   password: '',
+                  email: '',
                   birthday: '',
                   favorites: []
                 }
@@ -125,14 +119,17 @@
         </tr>
         <tr>
           <td>Allow users to update their user info</td>
-          <td>/users/[username]</td>
+          <td>/users/:Username</td>
           <td>PUT</td>
-          <td>:username</td>
-          <td>A JSON object holding the new username. Example:
+          <td>A JSON object holding the new user data. Example:
             <pre>
               <code>
                 {
-                  username: ''
+                  username: '',
+                  password: '',
+                  email: '',
+                  birthday: '',
+                  favorites: []
                 }
               </code>
             </pre>
@@ -143,8 +140,8 @@
                 {
                   id: '1'
                   username: '',
-                  email: '',
                   password: '',
+                  email: '',
                   birthday: '',
                   favorites: []
                 }
@@ -154,17 +151,15 @@
         </tr>
         <tr>
           <td>Allow users to add a movie to their list of favorites</td>
-          <td>/users/[username]/[movie]</td>
+          <td>/users/:Username/movies/:MovieID</td>
           <td>POST</td>
-          <td>:username, :movie</td>
           <td>None</td>
           <td>A text message indicating the movie was added</td>
         </tr>
         <tr>
           <td>Allow users to remove a movie from their list of favorites</td>
-          <td>/users/[username]/[movie]</td>
+          <td>/users/:Username/movies/:MovieID</td>
           <td>DELETE</td>
-          <td>:username, :movie</td>
           <td>None</td>
           <td>A text message indicating the movie was deleted</td>
         </tr>
